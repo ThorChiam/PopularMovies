@@ -1,6 +1,9 @@
 package com.shentuo.popularmovies.ui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +15,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewTreeObserver;
+import android.widget.Toast;
 
 import com.shentuo.popularmovies.R;
 import com.shentuo.popularmovies.global.Constants;
@@ -64,7 +68,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
         mMoviesList.setAdapter(mAdapter);
 
         //Show most popular movies by default
-        getMoviePosters(MOST_POPULAR);
+        if (isOnline()) {
+            getMoviePosters(MOST_POPULAR);
+        } else {
+            Toast.makeText(this, getResources().getString(R.string.no_internet), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void getMoviePosters(int sortType) {
@@ -121,12 +129,16 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
 
         int id = item.getItemId();
 
-        if (id == R.id.most_popular) {
-            getMoviePosters(MOST_POPULAR);
-            return true;
-        } else if (id == R.id.top_rated) {
-            getMoviePosters(TOP_RATED);
-            return true;
+        if (isOnline()) {
+            if (id == R.id.most_popular) {
+                getMoviePosters(MOST_POPULAR);
+                return true;
+            } else if (id == R.id.top_rated) {
+                getMoviePosters(TOP_RATED);
+                return true;
+            }
+        } else {
+            Toast.makeText(this, getResources().getString(R.string.no_internet), Toast.LENGTH_LONG).show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -137,5 +149,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
         Intent startDetailIntent = new Intent(MainActivity.this, MovieDetailActivity.class);
         startDetailIntent.putExtra(Constants.EXTRA_KEY, jsonString);
         startActivity(startDetailIntent);
+    }
+
+    private boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }
