@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.shentuo.popularmovies.R;
+import com.shentuo.popularmovies.global.Constants;
 import com.shentuo.popularmovies.model.Poster;
 import com.squareup.picasso.Picasso;
 
@@ -24,8 +25,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.PosterView
     final private ListItemClickListener mOnClickListener;
     private Context context;
     private List<Poster> mData;
-    private final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
-    private String imageSize = "w185";//"w92", "w154", "w185", "w342", "w500", "w780", or "original"
 
     public interface ListItemClickListener {
         void onListItemClick(String jsonString);
@@ -76,7 +75,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.PosterView
         }
 
         void bind(int listIndex) {
-            String imageURL = BASE_IMAGE_URL + imageSize + "/" + mData.get(listIndex).getPoster_path();
+            String imageURL = Constants.BASE_IMAGE_URL + Constants.IMAGE_SIZE + "/" + mData.get(listIndex).getPoster_path();
             Picasso.with(context).load(imageURL).into(listItemPosterView);
         }
 
