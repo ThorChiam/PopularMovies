@@ -53,5 +53,15 @@ public class MovieDetailActivity extends AppCompatActivity {
             tvReleaseDate.setText(releaseDate);
         }
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }
