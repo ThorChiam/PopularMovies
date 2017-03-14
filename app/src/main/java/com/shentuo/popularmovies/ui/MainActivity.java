@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,13 +17,14 @@ import android.widget.Toast;
 import com.shentuo.popularmovies.R;
 import com.shentuo.popularmovies.global.Constants;
 import com.shentuo.popularmovies.model.Poster;
+import com.shentuo.popularmovies.ui.utilities.AsyncTaskCompleteListener;
+import com.shentuo.popularmovies.ui.utilities.GetMoviePostersTask;
 import com.shentuo.popularmovies.ui.utilities.NetworkUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.ListItemClickListener {
@@ -74,25 +74,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
             requestUrl = NetworkUtils.buildUrlForTopRated();
         }
 
-        new GetMoviePostersTask().execute(requestUrl);
+        new GetMoviePostersTask(new FetchMyDataTaskCompleteListener()).execute(requestUrl);
     }
 
-    public class GetMoviePostersTask extends AsyncTask<URL, Void, String> {
-
+    private class FetchMyDataTaskCompleteListener implements AsyncTaskCompleteListener<String> {
         @Override
-        protected String doInBackground(URL... params) {
-            URL searchUrl = params[0];
-            String getMoviesResults = null;
-            try {
-                getMoviesResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return getMoviesResults;
-        }
-
-        @Override
-        protected void onPostExecute(String getMoviesResults) {
+        public void onTaskComplete(String getMoviesResults) {
             if (getMoviesResults != null && !getMoviesResults.equals("")) {
                 try {
                     JSONObject response = new JSONObject(getMoviesResults);
@@ -108,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
             }
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
