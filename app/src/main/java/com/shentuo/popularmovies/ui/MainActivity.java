@@ -11,10 +11,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import com.shentuo.popularmovies.R;
@@ -43,25 +41,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
         setSupportActionBar(toolbar);
 
         mMoviesList = (RecyclerView) findViewById(R.id.rv_movies);
-        final GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        final GridLayoutManager layoutManager = new GridLayoutManager(this, numberOfColumns());
         mMoviesList.setLayoutManager(layoutManager);
-        mMoviesList.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                //Auto adjust the column number of grid view
-                mMoviesList.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int viewWidth = mMoviesList.getMeasuredWidth();
-                Display display = getWindowManager().getDefaultDisplay();
-                DisplayMetrics outMetrics = new DisplayMetrics();
-                display.getMetrics(outMetrics);
-
-                float density = getResources().getDisplayMetrics().density;
-                float gridViewWidth = getResources().getDimension(R.dimen.gridview_layout_width) / density;
-                int newSpanCount = (int) Math.floor(viewWidth / gridViewWidth);
-                layoutManager.setSpanCount(newSpanCount);
-                layoutManager.requestLayout();
-            }
-        });
 
         mAdapter = new MoviesAdapter(this);
 
@@ -73,6 +54,16 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
         } else {
             Toast.makeText(this, getResources().getString(R.string.no_internet), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private int numberOfColumns() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        // You can change this divider to adjust the size of the poster
+        int width = displayMetrics.widthPixels;
+        int nColumns = width / Constants.WIDTH_DIVIDER;
+        if (nColumns < 2) return 2;
+        return nColumns;
     }
 
     private void getMoviePosters(int sortType) {

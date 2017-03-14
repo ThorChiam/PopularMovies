@@ -76,7 +76,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.PosterView
 
         void bind(int listIndex) {
             String imageURL = Constants.BASE_IMAGE_URL + Constants.IMAGE_SIZE + "/" + mData.get(listIndex).getPoster_path();
-            Picasso.with(context).load(imageURL).into(listItemPosterView);
+            Picasso.with(context)
+                    .load(imageURL)
+                    .placeholder(R.drawable.ic_picture)
+                    .error(R.drawable.ic_error)
+                    .into(listItemPosterView);
         }
 
         @Override

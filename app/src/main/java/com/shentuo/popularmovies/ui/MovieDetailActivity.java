@@ -14,12 +14,25 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by ShentuoZhan on 13/3/17.
  */
 
 public class MovieDetailActivity extends AppCompatActivity {
     private Poster poster;
+    @BindView(R.id.movie_title)
+    TextView tvTitle;
+    @BindView(R.id.movie_thumbnail)
+    ImageView ivPoster;
+    @BindView(R.id.movie_overview)
+    TextView tvOverview;
+    @BindView(R.id.user_rating)
+    TextView tvRating;
+    @BindView(R.id.release_date)
+    TextView tvReleaseDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,16 +49,16 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_detail);
-        TextView tvTitle = (TextView) findViewById(R.id.movie_title);
-        ImageView ivPoster = (ImageView) findViewById(R.id.movie_thumbnail);
-        TextView tvOverview = (TextView) findViewById(R.id.movie_overview);
-        TextView tvRating = (TextView) findViewById(R.id.user_rating);
-        TextView tvReleaseDate = (TextView) findViewById(R.id.release_date);
+        ButterKnife.bind(this);
 
         if (poster != null) {
             tvTitle.setText(poster.getOriginal_title());
             String imageURL = Constants.BASE_IMAGE_URL + Constants.THUMBNAIL_SIZE + "/" + poster.getPoster_path();
-            Picasso.with(this).load(imageURL).into(ivPoster);
+            Picasso.with(this)
+                    .load(imageURL)
+                    .placeholder(R.drawable.ic_picture)
+                    .error(R.drawable.ic_error)
+                    .into(ivPoster);
             tvOverview.setText(poster.getOverview());
             String userRate = getResources().getString(R.string.user_rate) + poster.getVote_average();
             tvRating.setText(userRate);
