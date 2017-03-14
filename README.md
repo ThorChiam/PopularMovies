@@ -10,8 +10,8 @@ ADD API KEY:
 
 copy and paste the API KEY given in 
 
-global/Constants: REQUEST_API_KEY
+gradle.properties file with name API_KEY
 
 example:
 
-public static final String REQUEST_API_KEY = "abcdefg"; //the abcdefg should be the api key given
+API_KEY = "abcdefg"  // abcdefg should be the API KEY given
