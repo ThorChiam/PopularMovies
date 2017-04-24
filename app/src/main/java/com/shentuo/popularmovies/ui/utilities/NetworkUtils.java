@@ -1,5 +1,9 @@
 package com.shentuo.popularmovies.ui.utilities;
 
+import android.app.Activity;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 
 import com.shentuo.popularmovies.global.Constants;
@@ -51,6 +55,38 @@ public class NetworkUtils {
         return url;
     }
 
+    public static URL buildUrlForTrailers(int movieId) {
+        String requestUrl = BASE_URL + "/movie/" + movieId + "/videos";
+        Uri builtUri = Uri.parse(requestUrl).buildUpon()
+                .appendQueryParameter(PARAM_API_KEY, Constants.REQUEST_API_KEY)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
+
+    public static URL buildUrlForReviews(int movieId) {
+        String requestUrl = BASE_URL + "/movie/" + movieId + "/reviews";
+        Uri builtUri = Uri.parse(requestUrl).buildUpon()
+                .appendQueryParameter(PARAM_API_KEY, Constants.REQUEST_API_KEY)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
+
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
@@ -68,5 +104,12 @@ public class NetworkUtils {
         } finally {
             urlConnection.disconnect();
         }
+    }
+
+    public static boolean isOnline(Activity activity) {
+        ConnectivityManager cm =
+                (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }
