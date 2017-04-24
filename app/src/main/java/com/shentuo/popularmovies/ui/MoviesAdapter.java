@@ -85,7 +85,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.PosterView
         @Override
         public void onClick(View view) {
             int clickedPosition = getAdapterPosition();
-            mOnClickListener.onListItemClick(mData.get(clickedPosition).toString());
+            if (clickedPosition > -1 && clickedPosition < mData.size()) {
+                mOnClickListener.onListItemClick(mData.get(clickedPosition).toString());
+            }
         }
     }
 }

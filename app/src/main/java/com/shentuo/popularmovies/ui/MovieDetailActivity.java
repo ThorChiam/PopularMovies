@@ -1,5 +1,6 @@
 package com.shentuo.popularmovies.ui;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
@@ -10,9 +11,11 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.shentuo.popularmovies.R;
+import com.shentuo.popularmovies.data.MovieListContract;
 import com.shentuo.popularmovies.databinding.ActivityDetailBinding;
 import com.shentuo.popularmovies.global.Constants;
 import com.shentuo.popularmovies.model.Poster;
@@ -54,6 +57,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
             try {
                 JSONObject jsonObject = new JSONObject(jsonString);
                 poster = new Poster(jsonObject);
+                poster.setFavorited(jsonObject.getBoolean("isFavorited"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -93,7 +97,20 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
             } else {
                 Toast.makeText(this, getResources().getString(R.string.no_internet), Toast.LENGTH_LONG).show();
             }
+
+            mBinding.addFavorite.setChecked(poster.isFavorited());
+            mBinding.addFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (b) {
+                        addNewFavorite();
+                    } else {
+                        removeMovie();
+                    }
+                }
+            });
         }
+
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -211,7 +228,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
 
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+        finish();
         return true;
     }
 
@@ -229,5 +246,24 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
 
     private boolean isYoutubeInstalled() {
         return getPackageManager().getLaunchIntentForPackage("com.google.android.youtube") != null;
+    }
+
+    private void addNewFavorite() {
+        ContentValues cv = new ContentValues();
+        cv.put(MovieListContract.MovieListEntry.COLUMN_TITLE, poster.getOriginal_title());
+        cv.put(MovieListContract.MovieListEntry.COLUMN_ID, poster.getId());
+        cv.put(MovieListContract.MovieListEntry.COLUMN_POSTER_PATH, poster.getPoster_path());
+        cv.put(MovieListContract.MovieListEntry.COLUMN_OVERVIEW, poster.getOverview());
+        cv.put(MovieListContract.MovieListEntry.COLUMN_VOTE_AVERAGE, poster.getVote_average());
+        cv.put(MovieListContract.MovieListEntry.COLUMN_RELEASE_DATE, poster.getRelease_date());
+        Uri uri = getContentResolver().insert(MovieListContract.MovieListEntry.CONTENT_URI, cv);
+
+        if (uri != null) {
+            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void removeMovie() {
+        getContentResolver().delete(MovieListContract.MovieListEntry.CONTENT_URI, MovieListContract.MovieListEntry.COLUMN_ID + "=" + poster.getId(), null);
     }
 }

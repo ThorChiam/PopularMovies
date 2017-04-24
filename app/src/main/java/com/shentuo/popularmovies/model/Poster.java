@@ -21,6 +21,7 @@ public class Poster {
     private int vote_count;
     private boolean video;
     private double vote_average;
+    private boolean isFavorited;
 
     public Poster(JSONObject object) {
         try {
@@ -37,9 +38,13 @@ public class Poster {
             this.vote_count = object.getInt("vote_count");
             this.video = object.getBoolean("video");
             this.vote_average = object.getDouble("vote_average");
+            this.isFavorited = object.getBoolean("isFavorited");
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public Poster() {
     }
 
     public String getPoster_path() {
@@ -146,6 +151,14 @@ public class Poster {
         this.vote_average = vote_average;
     }
 
+    public boolean isFavorited() {
+        return isFavorited;
+    }
+
+    public void setFavorited(boolean favorited) {
+        isFavorited = favorited;
+    }
+
     @Override
     public String toString() {
         JSONObject jsonObject = new JSONObject();
@@ -163,6 +176,7 @@ public class Poster {
             jsonObject.put("vote_count", vote_count);
             jsonObject.put("video", video);
             jsonObject.put("vote_average", vote_average);
+            jsonObject.put("isFavorited", isFavorited);
         } catch (JSONException e) {
             e.printStackTrace();
         }
