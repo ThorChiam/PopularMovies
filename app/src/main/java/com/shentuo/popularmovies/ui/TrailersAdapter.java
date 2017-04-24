@@ -18,7 +18,7 @@ import java.util.List;
  */
 
 public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.TrailerViewHolder> {
-    private static final String TAG = MoviesAdapter.class.getSimpleName();
+    private static final String TAG = TrailersAdapter.class.getSimpleName();
     final private TrailersAdapter.ListItemClickListener mOnClickListener;
     private Context context;
     private List<Trailer> mData;

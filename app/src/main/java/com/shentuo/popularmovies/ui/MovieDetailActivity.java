@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.shentuo.popularmovies.R;
 import com.shentuo.popularmovies.global.Constants;
 import com.shentuo.popularmovies.model.Poster;
+import com.shentuo.popularmovies.model.Review;
 import com.shentuo.popularmovies.model.Trailer;
 import com.shentuo.popularmovies.ui.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
@@ -36,8 +37,10 @@ import butterknife.ButterKnife;
 
 public class MovieDetailActivity extends AppCompatActivity implements TrailersAdapter.ListItemClickListener, LoaderManager.LoaderCallbacks<String> {
     private Poster poster;
-    private TrailersAdapter mAdapter;
+    private TrailersAdapter mTrailerAdapter;
     private RecyclerView mTrailersList;
+    private ReviewsAdapter mReviewAdapter;
+    private RecyclerView mReviewsList;
     private static final String GET_TRAILERS_URL = "getTrailers";
     private static final int GET_TRAILERS_LOADER = 23;
     private static final String GET_REVIEWS_URL = "getReviews";
@@ -72,11 +75,16 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
         ButterKnife.bind(this);
 
         mTrailersList = (RecyclerView) findViewById(R.id.rv_trailers);
+        mReviewsList = (RecyclerView) findViewById(R.id.rv_reviews);
         final GridLayoutManager layoutManager = new GridLayoutManager(this, 1);
+        final GridLayoutManager layoutManager2 = new GridLayoutManager(this, 1);
         mTrailersList.setLayoutManager(layoutManager);
-        mAdapter = new TrailersAdapter(this);
+        mReviewsList.setLayoutManager(layoutManager2);
+        mTrailerAdapter = new TrailersAdapter(this);
+        mReviewAdapter = new ReviewsAdapter();
 
-        mTrailersList.setAdapter(mAdapter);
+        mTrailersList.setAdapter(mTrailerAdapter);
+        mReviewsList.setAdapter(mReviewAdapter);
 
         if (poster != null) {
             tvTitle.setText(poster.getOriginal_title());
@@ -93,7 +101,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
             tvReleaseDate.setText(releaseDate);
 
             if (NetworkUtils.isOnline(this)) {
-                getTrailers();
+                getTrailersAndReviews();
             } else {
                 Toast.makeText(this, getResources().getString(R.string.no_internet), Toast.LENGTH_LONG).show();
             }
@@ -105,25 +113,34 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
         }
     }
 
-    private void getTrailers() {
-        URL requestUrl = NetworkUtils.buildUrlForTrailers(poster.getId());
+    private void getTrailersAndReviews() {
+        URL getTrailersUrl = NetworkUtils.buildUrlForTrailers(poster.getId());
+        URL getReviewsUrl = NetworkUtils.buildUrlForReviews(poster.getId());
 
         Bundle queryBundle = new Bundle();
 
-        queryBundle.putString(GET_TRAILERS_URL, requestUrl.toString());
+        queryBundle.putString(GET_TRAILERS_URL, getTrailersUrl.toString());
+        queryBundle.putString(GET_REVIEWS_URL, getReviewsUrl.toString());
 
         LoaderManager loaderManager = getSupportLoaderManager();
         Loader<String> getTrailerLoader = loaderManager.getLoader(GET_TRAILERS_LOADER);
+        Loader<String> getReviewLoader = loaderManager.getLoader(GET_REVIEWS_LOADER);
 
         if (getTrailerLoader == null) {
             loaderManager.initLoader(GET_TRAILERS_LOADER, queryBundle, this);
         } else {
             loaderManager.restartLoader(GET_TRAILERS_LOADER, queryBundle, this);
         }
+
+        if (getReviewLoader == null) {
+            loaderManager.initLoader(GET_REVIEWS_LOADER, queryBundle, this);
+        } else {
+            loaderManager.restartLoader(GET_REVIEWS_LOADER, queryBundle, this);
+        }
     }
 
     @Override
-    public Loader<String> onCreateLoader(int id, final Bundle args) {
+    public Loader<String> onCreateLoader(final int id, final Bundle args) {
         return new AsyncTaskLoader<String>(this) {
             @Override
             protected void onStartLoading() {
@@ -137,35 +154,62 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
 
             @Override
             public String loadInBackground() {
-                String getTrailerUrlString = args.getString(GET_TRAILERS_URL);
+                if (GET_TRAILERS_LOADER == id) {
+                    String getTrailerUrlString = args.getString(GET_TRAILERS_URL);
 
-                if (getTrailerUrlString == null) {
-                    return null;
+                    if (getTrailerUrlString == null) {
+                        return null;
+                    }
+
+                    return getResponse(getTrailerUrlString);
                 }
 
-                try {
-                    URL getTrailerUrl = new URL(getTrailerUrlString);
-                    return NetworkUtils.getResponseFromHttpUrl(getTrailerUrl);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
+                if (GET_REVIEWS_LOADER == id) {
+                    String getReviewUrlString = args.getString(GET_REVIEWS_URL);
+
+                    if (getReviewUrlString == null) {
+                        return null;
+                    }
+
+                    return getResponse(getReviewUrlString);
                 }
+                return null;
             }
         };
     }
 
-    @Override
-    public void onLoadFinished(Loader<String> loader, String getTrailersResults) {
+    private String getResponse(String requestUrl) {
+        try {
+            URL getTrailerUrl = new URL(requestUrl);
+            return NetworkUtils.getResponseFromHttpUrl(getTrailerUrl);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-        if (getTrailersResults != null && !getTrailersResults.equals("")) {
+    @Override
+    public void onLoadFinished(Loader<String> loader, String getResponseResults) {
+
+        if (getResponseResults != null && !getResponseResults.equals("")) {
             try {
-                JSONObject response = new JSONObject(getTrailersResults);
+                JSONObject response = new JSONObject(getResponseResults);
                 JSONArray results = response.getJSONArray(Constants.RESULT_KEY);
-                mAdapter.clearItems();
-                for (int i = 0; i < results.length(); i++) {
-                    mAdapter.addTrailerItem(new Trailer(results.getJSONObject(i)));
+                if (GET_TRAILERS_LOADER == loader.getId()) {
+                    mTrailerAdapter.clearItems();
+                    for (int i = 0; i < results.length(); i++) {
+                        mTrailerAdapter.addTrailerItem(new Trailer(results.getJSONObject(i)));
+                    }
+                    mTrailerAdapter.notifyDataSetChanged();
                 }
-                mAdapter.notifyDataSetChanged();
+                if (GET_REVIEWS_LOADER == loader.getId()) {
+                    mReviewAdapter.clearItems();
+                    for (int i = 0; i < results.length(); i++) {
+                        mReviewAdapter.addReviewItem(new Review(results.getJSONObject(i)));
+                    }
+                    mReviewAdapter.notifyDataSetChanged();
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
