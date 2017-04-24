@@ -1,6 +1,7 @@
 package com.shentuo.popularmovies.ui;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -8,7 +9,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.shentuo.popularmovies.R;
+import com.shentuo.popularmovies.databinding.ActivityMainBinding;
 import com.shentuo.popularmovies.global.Constants;
 import com.shentuo.popularmovies.model.Poster;
 import com.shentuo.popularmovies.ui.utilities.NetworkUtils;
@@ -36,16 +37,17 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
     private static final String GET_MOVIE_QUERY_URL = "getMovies";
     private static final int GET_MOVIE_LOADER = 22;
     private ProgressBar mLoadingIndicator;
+    private ActivityMainBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        setSupportActionBar(mBinding.toolbar);
 
-        mMoviesList = (RecyclerView) findViewById(R.id.rv_movies);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        mMoviesList = mBinding.rvMovies;
+        mLoadingIndicator = mBinding.pbLoadingIndicator;
         final GridLayoutManager layoutManager = new GridLayoutManager(this, numberOfColumns());
         mMoviesList.setLayoutManager(layoutManager);
 

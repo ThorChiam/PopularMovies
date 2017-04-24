@@ -1,6 +1,7 @@
 package com.shentuo.popularmovies.ui;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -9,11 +10,10 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shentuo.popularmovies.R;
+import com.shentuo.popularmovies.databinding.ActivityDetailBinding;
 import com.shentuo.popularmovies.global.Constants;
 import com.shentuo.popularmovies.model.Poster;
 import com.shentuo.popularmovies.model.Review;
@@ -27,9 +27,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by ShentuoZhan on 13/3/17.
@@ -46,16 +43,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
     private static final String GET_REVIEWS_URL = "getReviews";
     private static final int GET_REVIEWS_LOADER = 24;
     private static final String TAG = "MovieDetailActivity";
-    @BindView(R.id.movie_title)
-    TextView tvTitle;
-    @BindView(R.id.movie_thumbnail)
-    ImageView ivPoster;
-    @BindView(R.id.movie_overview)
-    TextView tvOverview;
-    @BindView(R.id.user_rating)
-    TextView tvRating;
-    @BindView(R.id.release_date)
-    TextView tvReleaseDate;
+    private ActivityDetailBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,10 +60,10 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
         }
 
         setContentView(R.layout.activity_detail);
-        ButterKnife.bind(this);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
-        mTrailersList = (RecyclerView) findViewById(R.id.rv_trailers);
-        mReviewsList = (RecyclerView) findViewById(R.id.rv_reviews);
+        mTrailersList = mBinding.rvTrailers;
+        mReviewsList = mBinding.rvReviews;
         final GridLayoutManager layoutManager = new GridLayoutManager(this, 1);
         final GridLayoutManager layoutManager2 = new GridLayoutManager(this, 1);
         mTrailersList.setLayoutManager(layoutManager);
@@ -87,18 +75,18 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
         mReviewsList.setAdapter(mReviewAdapter);
 
         if (poster != null) {
-            tvTitle.setText(poster.getOriginal_title());
+            mBinding.movieTitle.setText(poster.getOriginal_title());
             String imageURL = Constants.BASE_IMAGE_URL + Constants.THUMBNAIL_SIZE + "/" + poster.getPoster_path();
             Picasso.with(this)
                     .load(imageURL)
                     .placeholder(R.drawable.ic_picture)
                     .error(R.drawable.ic_error)
-                    .into(ivPoster);
-            tvOverview.setText(poster.getOverview());
+                    .into(mBinding.movieThumbnail);
+            mBinding.movieOverview.setText(poster.getOverview());
             String userRate = getResources().getString(R.string.user_rate) + poster.getVote_average();
-            tvRating.setText(userRate);
+            mBinding.userRating.setText(userRate);
             String releaseDate = getResources().getString(R.string.release_date) + poster.getRelease_date();
-            tvReleaseDate.setText(releaseDate);
+            mBinding.releaseDate.setText(releaseDate);
 
             if (NetworkUtils.isOnline(this)) {
                 getTrailersAndReviews();

@@ -50,9 +50,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.PosterView
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View view = inflater.inflate(layoutIdForListItem, parent, false);
-        PosterViewHolder viewHolder = new PosterViewHolder(view);
 
-        return viewHolder;
+        return new PosterViewHolder(view);
     }
 
     @Override

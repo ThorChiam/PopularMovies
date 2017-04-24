@@ -41,9 +41,8 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewVi
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View view = inflater.inflate(layoutIdForListItem, parent, false);
-        ReviewsAdapter.ReviewViewHolder viewHolder = new ReviewsAdapter.ReviewViewHolder(view);
 
-        return viewHolder;
+        return new ReviewsAdapter.ReviewViewHolder(view);
     }
 
     @Override

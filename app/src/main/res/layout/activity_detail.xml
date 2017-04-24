@@ -1,92 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp">
-
-        <TextView
-            android:id="@+id/movie_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="14dp"
-            android:textAlignment="center"
-            android:textSize="26sp" />
-
-        <ImageView
-            android:id="@+id/movie_thumbnail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="14dp" />
-
-        <TextView
-            android:id="@+id/movie_overview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textSize="16sp" />
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="24dp">
+            android:orientation="vertical"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
             <TextView
-                android:id="@+id/user_rating"
+                android:id="@+id/movie_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                android:textAlignment="center"
+                android:textSize="26sp" />
+
+            <ImageView
+                android:id="@+id/movie_thumbnail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginEnd="30dp" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="14dp" />
 
             <TextView
-                android:id="@+id/release_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
+                android:id="@+id/movie_overview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/fab_margin"
-                android:text="@string/trailers" />
+                android:textAlignment="center"
+                android:textSize="16sp" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_trailers"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingEnd="20dp"
-                android:paddingStart="20dp" />
-
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/fab_margin"
-                android:layout_marginTop="@dimen/fab_margin"
-                android:text="@string/reviews" />
+                android:orientation="horizontal"
+                android:paddingBottom="24dp">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_reviews"
+                <TextView
+                    android:id="@+id/user_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginEnd="30dp" />
+
+                <TextView
+                    android:id="@+id/release_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingEnd="20dp"
-                android:paddingStart="20dp" />
-        </LinearLayout>
+                android:layout_height="1dp" />
 
-    </LinearLayout>
-</ScrollView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/fab_margin"
+                    android:text="@string/trailers" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_trailers"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingEnd="20dp"
+                    android:paddingStart="20dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/fab_margin"
+                    android:layout_marginTop="@dimen/fab_margin"
+                    android:text="@string/reviews" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_reviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingEnd="20dp"
+                    android:paddingStart="20dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</layout>
