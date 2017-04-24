@@ -19,7 +19,6 @@ import static com.shentuo.popularmovies.data.MovieListContract.MovieListEntry.TA
 public class MovieListContentProvider extends ContentProvider {
 
     public static final int MOVIES = 100;
-    public static final int MOVIE_WITH_ID = 101;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
@@ -28,7 +27,6 @@ public class MovieListContentProvider extends ContentProvider {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         uriMatcher.addURI(MovieListContract.AUTHORITY, MovieListContract.PATH_MOVIES, MOVIES);
-        uriMatcher.addURI(MovieListContract.AUTHORITY, MovieListContract.PATH_MOVIES + "/#", MOVIE_WITH_ID);
 
         return uriMatcher;
     }
@@ -112,11 +110,9 @@ public class MovieListContentProvider extends ContentProvider {
 
         int match = sUriMatcher.match(uri);
         int moviesDeleted;
-
         switch (match) {
-            case MOVIE_WITH_ID:
-                String id = uri.getPathSegments().get(1);
-                moviesDeleted = db.delete(TABLE_NAME, "_id=?", new String[]{id});
+            case MOVIES:
+                moviesDeleted = db.delete(TABLE_NAME, selection, null);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

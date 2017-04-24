@@ -57,7 +57,6 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
             try {
                 JSONObject jsonObject = new JSONObject(jsonString);
                 poster = new Poster(jsonObject);
-                poster.setFavorited(jsonObject.getBoolean("isFavorited"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -98,7 +97,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
                 Toast.makeText(this, getResources().getString(R.string.no_internet), Toast.LENGTH_LONG).show();
             }
 
-            mBinding.addFavorite.setChecked(poster.isFavorited());
+            mBinding.addFavorite.setChecked(checkFavorite());
             mBinding.addFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -228,7 +227,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
 
     @Override
     public boolean onSupportNavigateUp() {
-        finish();
+        onBackPressed();
         return true;
     }
 
@@ -265,5 +264,9 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailersAd
 
     private void removeMovie() {
         getContentResolver().delete(MovieListContract.MovieListEntry.CONTENT_URI, MovieListContract.MovieListEntry.COLUMN_ID + "=" + poster.getId(), null);
+    }
+
+    private boolean checkFavorite() {
+        return getContentResolver().query(MovieListContract.MovieListEntry.CONTENT_URI, null, MovieListContract.MovieListEntry.COLUMN_ID + "=" + poster.getId(), null, null).getCount() > 0;
     }
 }
