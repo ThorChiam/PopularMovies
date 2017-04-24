@@ -38,9 +38,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
     private static final String TAG = "MovieDetailActivity";
     private MoviesAdapter mAdapter;
     private RecyclerView mMoviesList;
-    private final int MOST_POPULAR = 1;
-    private final int TOP_RATED = 2;
-    private final int FAVORITES = 3;
+    private final int MOST_POPULAR = 0;
+    private final int TOP_RATED = 1;
+    private final int FAVORITES = 2;
     private static final String GET_MOVIE_QUERY_URL = "getMovies";
     private static final int GET_MOVIE_LOADER = 22;
     private static final String GET_FAVORITES_QUERY_URL = "getFavorites";
@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
     private ProgressBar mLoadingIndicator;
     private ActivityMainBinding mBinding;
     private List<Poster> favoriteList;
+    private int selectedSortType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +67,6 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
         mMoviesList.setAdapter(mAdapter);
 
         favoriteList = new ArrayList<>();
-        //Show most popular movies by default
-        if (NetworkUtils.isOnline(this)) {
-            getMoviePosters(MOST_POPULAR);
-        } else {
-            Toast.makeText(this, getResources().getString(R.string.no_internet), Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
@@ -80,6 +75,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
         if (favoriteList == null) {
             favoriteList = new ArrayList<>();
         }
+        //Show favorites if offline
+        if (!NetworkUtils.isOnline(this)) {
+            selectedSortType = FAVORITES;
+            Toast.makeText(this, getResources().getString(R.string.no_internet), Toast.LENGTH_LONG).show();
+        }
+        getMoviePosters(selectedSortType);
     }
 
     private int numberOfColumns() {
@@ -234,15 +235,14 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
 
         if (NetworkUtils.isOnline(this)) {
             if (id == R.id.most_popular) {
-                getMoviePosters(MOST_POPULAR);
-                return true;
+                selectedSortType = MOST_POPULAR;
             } else if (id == R.id.top_rated) {
-                getMoviePosters(TOP_RATED);
-                return true;
+                selectedSortType = TOP_RATED;
             } else if (id == R.id.favorites) {
-                getMoviePosters(FAVORITES);
-                return true;
+                selectedSortType = FAVORITES;
             }
+            getMoviePosters(selectedSortType);
+            return true;
         } else {
             Toast.makeText(this, getResources().getString(R.string.no_internet), Toast.LENGTH_LONG).show();
         }
