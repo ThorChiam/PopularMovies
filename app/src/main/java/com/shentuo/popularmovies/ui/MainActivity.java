@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -49,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
     private ActivityMainBinding mBinding;
     private List<Poster> favoriteList;
     private int selectedSortType;
+    private static final String SORT_TYPE = "sort_type";
+    private static final String BUNDLE_RECYCLER_LAYOUT = "MainActivity.recycler.layout";
+    private Parcelable savedRecyclerLayoutState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +85,24 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
             Toast.makeText(this, getResources().getString(R.string.no_internet), Toast.LENGTH_LONG).show();
         }
         getMoviePosters(selectedSortType);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SORT_TYPE, selectedSortType);
+        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, mBinding.rvMovies.getLayoutManager().onSaveInstanceState());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            selectedSortType = savedInstanceState.getInt(SORT_TYPE, MOST_POPULAR);
+            getMoviePosters(selectedSortType);
+
+            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
+        }
     }
 
     private int numberOfColumns() {
@@ -215,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
             }
             loaderManager.destroyLoader(GET_MOVIE_LOADER);
         }
+        mBinding.rvMovies.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
     }
 
     @Override
