@@ -14,7 +14,7 @@ public class MovieListDBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "moviesDb.db";
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public MovieListDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -36,8 +36,20 @@ public class MovieListDBHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        db.execSQL("DROP TABLE IF EXISTS " + MovieListEntry.TABLE_NAME);
-        onCreate(db);
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        //Update app to include poster path, overview, vote average, release date in version 2
+        final String[] DATABASE_ALTER_MOVIES = {"ALTER TABLE " + MovieListEntry.TABLE_NAME
+                + " ADD COLUMN " + MovieListEntry.COLUMN_POSTER_PATH + " TEXT;",
+                "ALTER TABLE " + MovieListEntry.TABLE_NAME
+                        + " ADD COLUMN " + MovieListEntry.COLUMN_OVERVIEW + " TEXT;",
+                "ALTER TABLE " + MovieListEntry.TABLE_NAME
+                        + " ADD COLUMN " + MovieListEntry.COLUMN_VOTE_AVERAGE + " REAL;",
+                "ALTER TABLE " + MovieListEntry.TABLE_NAME
+                        + " ADD COLUMN " + MovieListEntry.COLUMN_RELEASE_DATE + " TEXT;"};
+        if (oldVersion < 2) {
+            for (String sqlStatement : DATABASE_ALTER_MOVIES) {
+                db.execSQL(sqlStatement);
+            }
+        }
     }
 }

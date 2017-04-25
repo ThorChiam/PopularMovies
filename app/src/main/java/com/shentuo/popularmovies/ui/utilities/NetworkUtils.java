@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.util.Log;
 
 import com.shentuo.popularmovies.global.Constants;
 
@@ -19,9 +20,14 @@ import java.util.Scanner;
  * Created by ShentuoZhan on 13/3/17.
  */
 
-public class NetworkUtils {
+public final class NetworkUtils {
     private final static String BASE_URL = "https://api.themoviedb.org/3";
     private final static String PARAM_API_KEY = "api_key";
+    private final static String TAG = "NetworkUtils";
+
+    private NetworkUtils() {
+        throw new AssertionError();
+    }
 
     public static URL buildUrlForMostPopular() {
         String requestUrl = BASE_URL + "/movie/popular";
@@ -33,7 +39,7 @@ public class NetworkUtils {
         try {
             url = new URL(builtUri.toString());
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
         }
 
         return url;
@@ -49,7 +55,7 @@ public class NetworkUtils {
         try {
             url = new URL(builtUri.toString());
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
         }
 
         return url;
@@ -65,7 +71,7 @@ public class NetworkUtils {
         try {
             url = new URL(builtUri.toString());
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
         }
 
         return url;
@@ -81,7 +87,7 @@ public class NetworkUtils {
         try {
             url = new URL(builtUri.toString());
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
         }
 
         return url;
